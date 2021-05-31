@@ -145,7 +145,35 @@ yargs.command({
 }).command({
     command: 'read',
     describe: "Affiche le détail d'une note",
-    handler: () => {
+    builder: {
+        titleNote: {
+            describe: 'Le titre de la note dont on veut afficher le message',
+            demandOption: true,
+            type: 'string'
+            }
+        },
+    handler: (argv) => {
         console.log("Voici le détail d'une note");
+
+        fs.readFile('data.json','utf-8', (err,data) => {
+            if (err) console.log(err);
+            else {
+                console.log(data);
+                const notes = JSON.parse(data);
+                console.log(notes);
+                
+                let newNote = argv.titleNote;
+                console.log(newNote);
+
+                for(let i=0;i<=notes.length -1;i++) {
+                    // console.log(notes[i].title);
+                    if (notes[i].title == newNote){
+                        console.log(notes[i].message);
+                    }
+                }
+
+            }
+        })
+
     }
 }).argv;
