@@ -49,7 +49,6 @@ yargs.command({
     handler: (argv) => {
         
         if (fs.existsSync('data.json')) {
-            // console.log("le fichier existe");
         
             fs.readFile('data.json', 'utf-8', (err, data) => {
                 if (err) console.log(err);
@@ -107,7 +106,7 @@ yargs.command({
             }
             })
         } else {
-            console.log("le fichier n'existe pas");
+            console.log("création du fichier 'data.json'...");
             let newNote = [{
                 id: 1,
                 title: argv.title,
@@ -116,7 +115,7 @@ yargs.command({
             
             const newNotesJSON = JSON.stringify(newNote);
 
-            console.log(newNotesJSON);
+            // console.log(newNotesJSON);
 
             fs.writeFile("data.json",newNotesJSON,(err) => {
                 if(err) console.log(err);
@@ -215,7 +214,7 @@ yargs.command({
                             if (notes[i].message != undefined) {
                             console.log(`Voici le message de la note "${notes[i].title}":\n ${notes[i].message}`);
                             } else {
-                                console.log("La note ne contient pas de message");
+                                console.log(`La note "${notes[i].title}" ne contient pas de message`);
                             }
                         }
                     }
