@@ -6,15 +6,19 @@ yargs.command({
     command: 'list',
     describe: 'Liste toutes mes notes',
     handler: () => {
-        console.log("Voici la liste des notes");
 
         fs.readFile('data.json','utf-8', (err,data) => {
             if (err) console.log(err);
             else {
-                console.log(data);
+                // console.log(data);
                 const notes = JSON.parse(data);
-                console.log(notes);
+                // console.log(notes);
 
+                if (notes.length == 0) {
+                    console.log('La liste est vide');
+                } else {
+                    console.log("Voici la liste des notes:");
+                }
                 notes.forEach(note => {
                     console.log(`${note.id}. ${note.title}`);
                 })
@@ -43,135 +47,179 @@ yargs.command({
         }
     },
     handler: (argv) => {
-        /*
-        if ('data.json' != true) {
-            let array = [];
-            fs.writeFile("data.json", arrayshloug,(err) => {
+        
+        if (fs.existsSync('data.json')) {
+            // console.log("le fichier existe");
+        
+            fs.readFile('data.json', 'utf-8', (err, data) => {
+                if (err) console.log(err);
+                else {
+                    // console.log(data);
+                    const notes = JSON.parse(data);
+                    // console.log(notes.length);
+
+                    if (notes.length == 0) {
+                        // console.log('tableau vide');
+
+                        let newNote = {
+                            id: 1,
+                            title: argv.title,
+                            message: argv.message
+                        };
+                        notes.push(newNote);
+                        // console.log(notes);
+                       
+                        const newNotesJSON = JSON.stringify(notes);
+
+                        // console.log(newNotesJSON);
+    
+                        fs.writeFile("data.json",newNotesJSON,(err) => {
+                            if(err) console.log(err);
+                            else {
+                                console.log("La note a été sauvegardé");
+                            }
+                        });
+                    } else {
+
+                    const lastNoteId = notes[notes.length -1].id;
+                    // console.log(lastNoteId);
+
+                    let newNote = {
+                        id: lastNoteId +1,
+                        title: argv.title,
+                        message: argv.message
+                    };
+                    // console.log(newNote);
+                    notes.push(newNote);
+                    // console.log(notes);
+
+                    const newNotesJSON = JSON.stringify(notes);
+
+                    // console.log(newNotesJSON);
+
+                    fs.writeFile("data.json",newNotesJSON,(err) => {
+                        if(err) console.log(err);
+                        else {
+                            console.log("La note a été sauvegardé");
+                        }
+                    });
+                }
+            }
+            })
+        } else {
+            console.log("le fichier n'existe pas");
+            let newNote = [{
+                id: 1,
+                title: argv.title,
+                message: argv.message
+                }];
+            
+            const newNotesJSON = JSON.stringify(newNote);
+
+            console.log(newNotesJSON);
+
+            fs.writeFile("data.json",newNotesJSON,(err) => {
                 if(err) console.log(err);
                 else {
-                    console.log("Le fichier 'data.json' a été créé");
+                    console.log("La note a été sauvegardée");
                 }
             });
         }
-        */
-        fs.readFile('data.json', 'utf-8', (err, data) => {
-            if (err) console.log(err);
-            /*
-            else if ('data.json' != []) {
-                const array = [];
-                fs.writeFile("data.json",array,(err) => {
-                    if(err) console.log(err);
-                    else {
-                        console.log("Un tableau a été créé");
-                    }
-                });
-            } */
-            else {
-                console.log(data);
-                const notes = JSON.parse(data);
-                console.log(notes);
-
-        // const lastNoteId = notes[notes.length -1].id;
-        // console.log(lastNoteId);
-
-                let newNote = {
-                    // id: lastNoteId +1,
-                    title: argv.title,
-                    message: argv.message
-                    };
-                console.log(newNote);
-                notes.push(newNote);
-                console.log(notes);
-
-                const newNotesJSON = JSON.stringify(notes);
-
-                console.log(newNotesJSON);
-
-                fs.writeFile("data.json",newNotesJSON,(err) => {
-                    if(err) console.log(err);
-                    else {
-                        console.log("La note a été sauvegardé");
-                    }
-                });
-            }
-        })
     }
 }).command({
     command: 'remove',
     describe: "Supprime une note",
     builder: {
-        delete: {
-            describe: 'supprime une note',
+        id: {
+            describe: 'l\'id de la note à supprimer',
             demandOption: true,
-            type: 'string'
+            type: 'number'
             }
         },
     handler: (argv) => {
-        console.log("Chaud pour supprimer une note");
-
+        console.log("Suppression de la note...");
         fs.readFile('data.json', 'utf-8', (err, data) => {
             if (err) console.log(err);
             else {
-                console.log(data);
+                // console.log(data);
                 const notes = JSON.parse(data);
-                console.log(notes);
+                const notes1 = notes.length;
+                // console.log(notes);
                 
-                let newNote = argv.delete;
-                console.log(newNote);
-                console.log(notes[0].title);
+                let newNote = argv.id;
+                // console.log(newNote);
+                // console.log(notes[0].id);
 
                 for(let i=0;i<=notes.length -1;i++) {
-                    console.log(notes[i].title);
-                    if (notes[i].title == newNote){
+                    // console.log(notes[i].id);
+                    if (notes[i].id == newNote){
                         notes.splice(i, 1);
+                        console.log("La note a été supprimée")
+                        break;
                     }
+                    
                 }
 
                 const newNotesJSON = JSON.stringify(notes);
-
-                console.log(newNotesJSON);
+                const notes2 = notes.length;
+                // console.log(newNotesJSON);
 
                 fs.writeFile("data.json",newNotesJSON,(err) => {
                     if(err) console.log(err);
                     else {
-                        console.log("La note a été sauvegardé");
+                        if (notes1 === notes2) {
+                            console.log(`Le numéro "${argv.id}" ne correspond à aucune note`);
+                        }
                     }
                 });
                 
             }
         })
-
     }
 }).command({
     command: 'read',
     describe: "Affiche le détail d'une note",
     builder: {
-        titleNote: {
-            describe: 'Le titre de la note dont on veut afficher le message',
+        id: {
+            describe: 'L\'id de la note dont on veut afficher le message',
             demandOption: true,
-            type: 'string'
+            type: 'number'
             }
         },
     handler: (argv) => {
-        console.log("Voici le détail d'une note");
 
         fs.readFile('data.json','utf-8', (err,data) => {
             if (err) console.log(err);
             else {
-                console.log(data);
+                // console.log(data);
                 const notes = JSON.parse(data);
-                console.log(notes);
-                
-                let newNote = argv.titleNote;
-                console.log(newNote);
+                // console.log(notes);
 
-                for(let i=0;i<=notes.length -1;i++) {
-                    // console.log(notes[i].title);
-                    if (notes[i].title == newNote){
-                        console.log(notes[i].message);
-                    }
+                if (notes.length === 0) {
+                    console.log("Impossible, la liste est vide");
                 }
 
+                let newNote = argv.id;
+                // console.log(newNote);
+                // console.log(notes[newNote -1]);
+                // console.log("l'index :" + notes.indexOf(notes[newNote -1]));
+                
+
+                if (notes.indexOf(notes[newNote -1]) == -1) {
+                    console.log("La note n'existe pas");
+                } else {
+                    
+                    for(let i=0;i<=notes.length -1;i++) {
+                        // console.log(notes[i].title);
+                        if (notes[i].id == newNote) {
+                            if (notes[i].message != undefined) {
+                            console.log(`Voici le message de la note "${notes[i].title}":\n ${notes[i].message}`);
+                            } else {
+                                console.log("La note ne contient pas de message");
+                            }
+                        }
+                    }
+                }
             }
         })
 
